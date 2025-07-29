@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sajjad YT - Social Media Services</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    }
+    .container {
+      background: linear-gradient(145deg, #ffffff, #e6e6e6);
+      max-width: 500px;
+      margin: auto;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 12px 12px 24px #bebebe, -12px -12px 24px #ffffff;
+      transition: transform 0.3s ease-in-out;
+      position: relative;
+    }
+    .container:hover {
+      transform: translateY(-5px);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      text-shadow: 1px 1px 2px #ccc;
+    }
+    label {
+      margin-top: 15px;
+      display: block;
+      font-weight: bold;
+      color: #333;
+    }
+    select, input[type="number"], input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: inset 2px 2px 6px #d1d9e6, inset -2px -2px 6px #fff;
+      background: #f0f0f0;
+      transition: all 0.2s ease-in-out;
+    }
+    select:focus, input:focus {
+      outline: none;
+      box-shadow: 0 0 8px rgba(0, 150, 255, 0.4);
+    }
+    #totalCost {
+      font-size: 18px;
+      color: green;
+      font-weight: bold;
+      margin: 15px 0;
+      text-shadow: 1px 1px #fff;
+    }
+    .action-button {
+      width: 100%;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 4px 4px 12px rgba(0,0,0,0.2);
+      text-align: center;
+      text-decoration: none;
+      margin-top: 15px;
+      transition: all 0.2s ease-in-out;
+      display: block;
+    }
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 6px 6px 15px rgba(0,0,0,0.25);
+    }
+    #downloadButton {
+      background: linear-gradient(to right, #007bff, #0056b3);
+    }
+    #whatsappButton {
+      background: linear-gradient(to right, #25D366, #128C7E);
+    }
+    #whatsappSection {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+    #afterDownloadMsg {
+      color: #222;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Sajjad YT</h2>
+    <label for="platform">Platform:</label>
+    <select id="platform" onchange="updateServices()">
+      <option value="instagram">Instagram</option>
+      <option value="youtube">YouTube</option>
+      <option value="facebook_profile">Facebook Profile</option>
+      <option value="facebook_page">Facebook Page</option>
+    </select>
+    <label for="service">Service:</label>
+    <select id="service" onchange="calculateCost()"></select>
+    <label for="quantity">Quantity (Max 200000):</label>
+    <input type="number" id="quantity" min="1" max="200000" value="1000" onchange="calculateCost()" />
+    <label for="email">Email:</label>
+    <input type="email" id="email" placeholder="example@email.com" required />
+    <div id="totalCost">Total Cost: ₹0</div>
+    <button id="downloadButton" class="action-button" onclick="downloadDetails()">Download Order</button>
+    <div id="whatsappSection">
+      <p id="afterDownloadMsg">Jo abhi download kiya gaya file ISI number par send kar do 👇</p>
+      <a id="whatsappButton" class="action-button" href="https://wa.me/919046444541" target="_blank">Send to WhatsApp</a>
+    </div>
+  </div>
+  <script>
+    const costs = {
+      instagram: {view: 0.5, follower: 110, like: 3, comment: 20},
+      youtube: {view: 100, comment: 60, like: 90, subscriber: 200},
+      facebook_profile: {follower: 155, like: 54, comment: 76, view: 167},
+      facebook_page: {follower: 267, like: 199, comment: 99, view: 67}
+    };
+    function updateServices() {
+      const platform = document.getElementById('platform').value;
+      const serviceSelect = document.getElementById('service');
+      serviceSelect.innerHTML = '';
+      Object.keys(costs[platform]).forEach(service => {
+        const opt = document.createElement('option');
+        opt.value = service;
+        opt.innerText = `${service} - ₹${costs[platform][service]} per 1000`;
+        serviceSelect.appendChild(opt);
+      });
+      calculateCost();
+    }
+    function calculateCost() {
+      const platform = document.getElementById('platform').value;
+      const service = document.getElementById('service').value;
+      const qty = parseInt(document.getElementById('quantity').value);
+      const costPerThousand = costs[platform][service];
+      const totalCost = (costPerThousand * qty) / 1000;
+      document.getElementById('totalCost').innerText = 'Total Cost: ₹' + totalCost.toFixed(2);
+    }
+    function downloadDetails() {
+      const platform = document.getElementById('platform').value;
+      const service = document.getElementById('service').value;
+      const quantity = document.getElementById('quantity').value;
+      const email = document.getElementById('email').value;
+      const costPerThousand = costs[platform][service];
+      const total = (costPerThousand * quantity) / 1000;
+      const content = `
+Platform: ${platform}
+Service: ${service}
+Quantity: ${quantity}
+Cost per 1000: ₹${costPerThousand}
+Total Cost: ₹${total.toFixed(2)}
+Email: ${email}
+      `.trim();
+      const blob = new Blob([content], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'order_details.txt';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      document.getElementById('whatsappSection').style.display = 'block';
+    }
+    window.onload = updateServices;
+  </script>
+</body>
+</html>
